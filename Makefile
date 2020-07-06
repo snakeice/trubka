@@ -5,6 +5,9 @@ WINDOWS=./bin/windows_amd64
 LINUX=./bin/linux_amd64
 DARWIN=./bin/darwin_amd64
 VERSION=$(shell git describe --tags --abbrev=0)
+PATCH=$(shell echo $(VERSION) | cut -d'.' -f 3)
+MAJOR=$(shell echo $(VERSION) | cut -d'.' -f 1 | cut -c2-)
+MINOR=$(shell echo $(VERSION) | cut -d'.' -f 2)
 COMMIT=$(shell git rev-parse HEAD)
 BUILT := $(shell date -u '+%a %d %b %Y %H:%M:%S GMT')
 RUNTIME=$(shell go version | cut -d' ' -f 3)
@@ -38,6 +41,7 @@ package:
 	@tar -C $(DARWIN) -cvzf ./bin/trubka_darwin-$(VERSION).tar.gz $(EXECUTABLE)
 	@zip -j ./bin/trubka_windows-$(VERSION).zip $(WINDOWS)/$(EXECUTABLE).exe
 	@tar -C $(LINUX) -cvzf ./bin/trubka_linux-$(VERSION).tar.gz $(EXECUTABLE)
+	@docker run --rm -v `pwd`/bin:/app fpm:debian -s tar -t deb --deb-no-default-config-files --prefix /usr/local/bin -v $(MAJOR).$(MINOR)-$(PATCH) --name $(EXECUTABLE) -p /app /app/$(EXECUTABLE)_linux-$(VERSION).tar.gz
 	@echo Darwin Checksum:
 	@shasum -a 256 ./bin/trubka_darwin-$(VERSION).tar.gz
 

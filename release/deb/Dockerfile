@@ -9,9 +9,4 @@ RUN apt-get update && apt-get install -y \
 	build-essential
 
 RUN gem install fpm --no-document
-
-VOLUME [ "/tmp/fpm" ]
-WORKDIR /tmp/fpm
-
 ENTRYPOINT [ "/usr/local/bin/fpm" ]
-CMD [ "--help" ]
